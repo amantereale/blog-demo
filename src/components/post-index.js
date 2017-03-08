@@ -16,13 +16,13 @@ class PostIndex extends Component {
     render() {
         return (
             <div>
-                <h3>Blog Post List</h3>
                 <div className="text-xs-right">
                     <Link to="/post/new" className="btn btn-primary">
-                        Add New Post
+                    Add New Post
                     </Link>
                 </div>
-                <div>Blog post list</div>
+                <h3>Blog Post List</h3>
+                <div>[Blog post list goes here]</div>
             </div>
         );
     }
