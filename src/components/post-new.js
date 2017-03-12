@@ -4,16 +4,16 @@ import {createPost} from '../actions/index';
 import {Link} from 'react-router';
 
 class PostNew extends Component {
-    static contextTypes = {
+    static contextTypes = { // => get access to the context used by the router for redirecting
         router: PropTypes.object
     };
 
     onSubmit(props) { // => these props are not the component props, but the form props
-        this.props.createPost(props) // (from action creator function)
-            .then(() => {
-                // blog post has been created, navigate user to index
-                this.context.router.push('/');
-            });
+        this.props.createPost(props). // (from action creator function)
+        then(() => {
+            // blog post has been created, navigate user to index
+            this.context.router.push('/');
+        });
     }
 
     render() {
