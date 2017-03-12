@@ -9,14 +9,14 @@ export default function(state = INITIAL_STATE, action) {
     switch (action.type) {
         case FETCH_POST:
             return {
-                ...state,
+                ...state, //=> take whatever the state currently is and add the following properties
                 post: action.payload.data
             };
         case DELETE_POST:
             return state;
         case FETCH_POSTS:
             return {
-                ...state, //=> take whatever the state currently is and add the following properties
+                post: null,
                 all: action.payload.data
             };
         default:

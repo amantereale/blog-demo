@@ -1,26 +1,7 @@
-import _ from 'lodash';
 import React, {Component, PropTypes} from 'react';
 import {reduxForm} from 'redux-form';
 import {createPost} from '../actions/index';
 import {Link} from 'react-router';
-
-const FIELDS = {
-    title: {
-        type: 'input',
-        label: 'Title',
-        error: 'Please enter a title'
-    },
-    categories: {
-        type: 'input',
-        label: 'Categories',
-        error: 'Please enter categories'
-    },
-    content: {
-        type: 'textarea',
-        label: 'Post Content',
-        error: 'Please enter some content'
-    }
-} //['title', 'categories', 'content'];
 
 class PostNew extends Component {
     static contextTypes = { // => get access to the context used by the router for redirecting
@@ -35,25 +16,18 @@ class PostNew extends Component {
         });
     }
 
-    renderField(fieldConfig, field) {
-        const fieldHelper = this.props.fields[field];
-
-        return (
-            <div className={getFormClasses(fieldHelper)} key={fieldConfig.label}>
-                <label>{fieldConfig.label}</label>
-                <fieldConfig.type type="text" className="form-control" {...fieldHelper}/>
-                <div className="text-help">
-                    {fieldHelper.touched
-                        ? fieldHelper.error
-                        : ''}
-                </div>
-            </div>
-        );
-    }
-
     render() {
         //redux-form gives us some props, one of which is the handleSubmit function
         const {handleSubmit} = this.props; // => same as const handleSubmit = this.props.handleSubmit;
+
+        //in the "fields" prop, redux-form gives us an object that maps with the input once passed into the input
+        const {
+            fields: {
+                title,
+                categories,
+                content
+            }
+        } = this.props; // => same as const title = this.props.fields.title;
 
         // the {...whatever} below deconstructs the object and passes it to the field
         // so that title.onChange="function() {}", for example, becomes onChange="function() {}"
@@ -61,7 +35,33 @@ class PostNew extends Component {
         return (
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                 <h3>Create New Post</h3>
-                {_.map(FIELDS, this.renderField.bind(this))}
+                <div className={getFormClasses(title)}>
+                    <label>Title</label>
+                    <input type="text" className="form-control" {...title}/>
+                    <div className="text-help">
+                        {title.touched
+                            ? title.error
+                            : ''}
+                    </div>
+                </div>
+                <div className={getFormClasses(categories)}>
+                    <label>Categories</label>
+                    <input type="text" className="form-control" {...categories}/>
+                    <div className="text-help">
+                        {categories.touched
+                            ? categories.error
+                            : ''}
+                    </div>
+                </div>
+                <div className={getFormClasses(content)}>
+                    <label>Content</label>
+                    <textarea className="form-control" {...content}/>
+                    <div className="text-help">
+                        {content.touched
+                            ? content.error
+                            : ''}
+                    </div>
+                </div>
 
                 <button type="submit" className="btn btn-primary">Save</button>
                 <Link to="/" id="cancelBtn" className="btn btn-danger">Cancel</Link>
@@ -81,11 +81,21 @@ function getFormClasses(obj) {
 // that specific field.
 function validate(values) {
     const errors = {};
-    _.each(FIELDS, (type, field) => {
-        if (!values[field]) {
-            errors[field] = type.error;
-        }
-    });
+
+    if (!values.title) {
+        errors.title = 'Enter a title';
+    }
+
+    if (!values.categories) {
+        errors.categories = 'Enter categories';
+    }
+
+    if (!values.content) {
+        errors.content = 'Enter content';
+    } else if (values.content.length < 50) {
+        errors.content = 'Please enter content longer than 50 characters';
+    }
+
     return errors;
 }
 
@@ -96,6 +106,8 @@ export default reduxForm({
     // configuration for reduxform goes here so it knows which
     // inputs to look out for
     form: 'PostNew',
-    fields: _.keys(FIELDS), //=> returns an array of keys in the object
+    fields: [
+        'title', 'categories', 'content'
+    ], //=> will need to be named in the form
     validate //=> validate: validate
 }, null, {createPost})(PostNew); // {createPost} is shorthand for mapDispatchToProps
